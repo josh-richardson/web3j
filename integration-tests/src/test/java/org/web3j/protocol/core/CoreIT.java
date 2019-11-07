@@ -15,6 +15,7 @@ package org.web3j.protocol.core;
 import java.math.BigInteger;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -77,7 +78,22 @@ public class CoreIT {
 
     @BeforeEach
     public void setUp() {
-        this.web3j = Web3j.build(new HttpService());
+        OkHttpClient client =
+                new OkHttpClient()
+                        .newBuilder()
+                        .authenticator(
+                                (route, response) -> {
+                                    String credential =
+                                            okhttp3.Credentials.basic(System.getenv("ROPSTEN_GETH_USERNAME"), System.getenv("ROPSTEN_GETH_PASSWORD"));
+                                    return response.request()
+                                            .newBuilder()
+                                            .header("Authorization", credential)
+                                            .build();
+                                })
+                        .build();
+        this.web3j =
+                Web3j.build(
+                        new HttpService("https://geth.epirus.web3labs.com/ropsten", client, true));
     }
 
     @Test
@@ -126,6 +142,8 @@ public class CoreIT {
         assertNotNull(ethSyncing.getResult());
     }
 
+    @Disabled // This will return null unless mining is enabled. Todo: use admin APIs to check if
+    // mining is enabled and enable/disable this test accordingly.
     @Test
     public void testEthCoinbase() throws Exception {
         EthCoinbase ethCoinbase = web3j.ethCoinbase().send();
@@ -230,7 +248,7 @@ public class CoreIT {
         EthGetCode ethGetCode =
                 web3j.ethGetCode(
                                 config.validContractAddress(),
-                                DefaultBlockParameter.valueOf(config.validBlock()))
+                                DefaultBlockParameter.valueOf("latest"))
                         .send();
         assertEquals(ethGetCode.getCode(), (config.validContractCode()));
     }
@@ -380,19 +398,21 @@ public class CoreIT {
         assertNotNull(ethBlock.getBlock());
     }
 
+    @Disabled // The method eth_GetCompilers does not exist/is not available (it was removed)
     @Test
     public void testEthGetCompilers() throws Exception {
         EthGetCompilers ethGetCompilers = web3j.ethGetCompilers().send();
         assertNotNull(ethGetCompilers.getCompilers());
     }
 
-    @Disabled // The method eth_compileLLL does not exist/is not available
+    @Disabled // The method eth_compileLLL does not exist/is not available (it was removed)
     @Test
     public void testEthCompileLLL() throws Exception {
         EthCompileLLL ethCompileLLL = web3j.ethCompileLLL("(returnlll (suicide (caller)))").send();
         assertFalse(ethCompileLLL.getCompiledSourceCode().isEmpty());
     }
 
+    @Disabled // The method eth_CompileSolidity does not exist/is not available (it was removed)
     @Test
     public void testEthCompileSolidity() throws Exception {
         String sourceCode =

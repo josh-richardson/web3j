@@ -17,7 +17,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.web3j.crypto.Credentials;
@@ -46,7 +45,6 @@ import static org.web3j.utils.Restriction.RESTRICTED;
  * Test designed to run with besu-quickstart https://github.com/PegaSysEng/besu-quickstart Using
  * orion 1.3.2
  */
-@Disabled
 public class BesuPrivacyQuickstartIntegrationTest {
     private static final String CLIENT_VERSION = "besu/v1.3.0/linux-x86_64/oracle_openjdk-java-11";
 

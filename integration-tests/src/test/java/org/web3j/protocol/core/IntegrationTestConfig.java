@@ -31,6 +31,8 @@ public interface IntegrationTestConfig {
 
     String validContractAddress();
 
+    BigInteger validContractBlock();
+
     String validContractAddressPositionZero();
 
     String validContractCode();
